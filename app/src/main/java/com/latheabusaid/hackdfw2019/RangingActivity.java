@@ -1,4 +1,4 @@
-package com.example.hackdfw2019;
+package com.latheabusaid.hackdfw2019;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -13,6 +13,8 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.hackdfw2019.R;
+
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
@@ -26,12 +28,18 @@ import org.altbeacon.beacon.distance.DistanceCalculator;
 
 public class RangingActivity extends Activity implements BeaconConsumer {
     protected static final String TAG = "RangingActivity";
-    private BeaconManager beaconManager = BeaconManager.getInstanceForApplication(this);
+    private BeaconManager beaconManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_ranging);
-        beaconManager.bind(this);
+        setContentView(R.layout.activity_main);
+        beaconManager = BeaconManager.getInstanceForApplication(this);
+        // To detect proprietary beacons, you must add a line like below corresponding to your beacon
+        // type.  Do a web search for "setBeaconLayout" to get the proper expression.
+        // beaconManager.getBeaconParsers().add(new BeaconParser().
+        //        setBeaconLayout("m:2-3=beac,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"));
+        //beaconManager.bind(this);
     }
     @Override
     protected void onDestroy() {
@@ -40,9 +48,10 @@ public class RangingActivity extends Activity implements BeaconConsumer {
     }
     @Override
     public void onBeaconServiceConnect() {
-        beaconManager.setRangeNotifier(new RangeNotifier() {
+        beaconManager.removeAllRangeNotifiers();
+        beaconManager.addRangeNotifier(new RangeNotifier() {
             @Override
-            public void didRangeBeaconsInRegion(Collection beacons, Region region) {
+            public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
                 if (beacons.size() > 0) {
                     Log.i(TAG, "The first beacon I see is about "+beacons.iterator().next().getDistance()+" meters away.");
                 }
@@ -51,8 +60,7 @@ public class RangingActivity extends Activity implements BeaconConsumer {
 
         try {
             beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        } catch (RemoteException e) {    }
     }
 }
+
