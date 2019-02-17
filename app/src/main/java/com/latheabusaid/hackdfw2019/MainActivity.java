@@ -3,6 +3,7 @@ package com.latheabusaid.hackdfw2019;
 import android.graphics.Color;
 import android.icu.text.RelativeDateTimeFormatter;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -28,11 +29,22 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.altbeacon.beacon.Beacon;
+import org.altbeacon.beacon.BeaconManager;
+import org.altbeacon.beacon.BeaconParser;
+import org.altbeacon.beacon.Identifier;
+import org.altbeacon.beacon.MonitorNotifier;
+import org.altbeacon.beacon.RangeNotifier;
+import org.altbeacon.beacon.Region;
+
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     public static final String TAG = "MainActivity";
+    private BeaconManager beaconManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +52,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         //RangingActivity testActivity = new RangingActivity();
         //testActivity.onBeaconServiceConnect();
+
+        beaconManager = BeaconManager.getInstanceForApplication(this);
+        /*
+         To detect proprietary beacons, you must add a line like below corresponding to your beacon
+         type.  Do a web search for "setBeaconLayout" to get the proper expression.
+         */
+        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
+
+//        beaconManager.bind(this);
 
         FirebaseApp.initializeApp(this);
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -85,28 +106,65 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+    protected void onDestroy() {
+        Log.d(MainActivity.TAG, "onDestroy was called");
+        super.onDestroy();
+//        beaconManager.unbind(this);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+//    @Override
+    public void onBeaconServiceConnect() {
+        Log.d(MainActivity.TAG, "onBeaconServiceConnect was called");
+        Region region = new Region("myBeacons", Identifier.parse("669ce5ab-dda9-4cc8-9af8-317768fcdb05"), null, null);
+        // Region region1 = new Region("myBeacons", Identifier.parse("669ce5ab-dda9-4cc8-9af8-317768fcdb05"), null, null);
+        beaconManager.setMonitorNotifier(new MonitorNotifier() {
+            @Override
+            public void didEnterRegion(Region region) {
+                try {
+                    Log.d(MainActivity.TAG, "try block");
+                    Log.d(MainActivity.TAG, "didEnterRegion");
+                    beaconManager.startRangingBeaconsInRegion(region);
+                } catch (RemoteException e) {
+                    Log.d(MainActivity.TAG, "catch block");
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void didExitRegion(Region region) {
+                try {
+                    Log.d(MainActivity.TAG, "didExitRegion");
+                    beaconManager.stopRangingBeaconsInRegion(region);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void didDetermineStateForRegion(int i, Region region) {
+                Log.d(MainActivity.TAG, "didnd");
+
+            }
+        });
+
+        beaconManager.setRangeNotifier(new RangeNotifier() {
+            @Override
+            public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
+                Log.d(MainActivity.TAG, "didRangeBeaconsInRegion was called");
+                //{
+                Log.d(MainActivity.TAG, "ID: " + region.getId1() + "|");
+                //}
+            }
+        });
+        try {
+            beaconManager.startMonitoringBeaconsInRegion(region);
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
-
-        return super.onOptionsItemSelected(item);
     }
 
-    public void addVehicle(final FirebaseFirestore db, String name, String licencePlateNum, String make, String model) {
+        public void addVehicle(final FirebaseFirestore db, String name, String licencePlateNum, String make, String model) {
         //store passed info to car object
         Map<String, Object> car = new HashMap<>();
         car.put("Name", name);
