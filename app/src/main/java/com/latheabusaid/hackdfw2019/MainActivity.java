@@ -1,5 +1,7 @@
 package com.latheabusaid.hackdfw2019;
 
+import android.graphics.Color;
+import android.icu.text.RelativeDateTimeFormatter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -38,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         //RangingActivity testActivity = new RangingActivity();
         //testActivity.onBeaconServiceConnect();
-        setContentView(R.layout.activity_main);
 
         FirebaseApp.initializeApp(this);
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -69,12 +70,18 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, nameStr + " " + licensePlateStr + " " + makeStr + " " + modelStr);
                 addVehicle(db,nameStr,licensePlateStr,makeStr,modelStr);
                 setContentView(R.layout.activity_map);
+
+                //Spot3
+                Button spot3;
+                spot3 = (Button) findViewById(R.id.button3);
+                spot3.setBackgroundColor(Color.GREEN);
+
+                isParkingSpaceFull(db,1, spot3);
+
             }
         });
 
         setParkingSpace(db,1,true);
-
-        isParkingSpaceFull(db,1);
     }
 
     @Override
@@ -147,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //TODO: make this function read the data from the document and return the occupied value
-    public void isParkingSpaceFull (FirebaseFirestore db, int spotNum) {
+    public void isParkingSpaceFull (FirebaseFirestore db, int spotNum, final Button spot) {
         DocumentReference docRef = db.collection("Parking Spaces").document("Spot" + spotNum);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -157,6 +164,7 @@ public class MainActivity extends AppCompatActivity {
                     if (document.exists()) {
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
                         Log.d(TAG, "Parking spot occupied: " + document.getBoolean("Occupied"));
+                        spot.setBackgroundColor(Color.RED);
                     } else {
                         Log.d(TAG, "No such document");
                     }
