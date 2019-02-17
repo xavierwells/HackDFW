@@ -21,25 +21,28 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(MainActivity.TAG,"onCreate was called");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         beaconManager = BeaconManager.getInstanceForApplication(this);
         // To detect proprietary beacons, you must add a line like below corresponding to your beacon
         // type.  Do a web search for "setBeaconLayout" to get the proper expression.
-        beaconManager.getBeaconParsers().add(new BeaconParser()
-                .setBeaconLayout("m:2-3=beac,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"));
+//        beaconManager.getBeaconParsers().add(new BeaconParser()
+//                .setBeaconLayout("m:2-3=beac,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"));
         beaconManager.bind(this);
 
     }
     @Override
     protected void onDestroy() {
+        Log.d(MainActivity.TAG,"onDestroy was called");
         super.onDestroy();
         beaconManager.unbind(this);
     }
     @Override
     public void onBeaconServiceConnect() {
-        final Region region = new Region("myBeacons", Identifier.parse("00000000000000000"), null, null);
-        beaconManager = BeaconManager.getInstanceForApplication(this);
+        Log.d(MainActivity.TAG,"onBeaconServiceConnect was called");
+        final Region region = new Region("myBeacons", Identifier.parse("FDCF8F045976C453"), null, null);
+
         beaconManager.setMonitorNotifier(new MonitorNotifier() {
             @Override
             public void didEnterRegion(Region region) {
@@ -70,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         beaconManager.setRangeNotifier(new RangeNotifier() {
             @Override
             public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
+                Log.d(MainActivity.TAG,"didRangeBeaconsInRegion was called");
                 for (Beacon oneBeacon : beacons) {
                     Log.d(MainActivity.TAG, "distance: " + oneBeacon.getDistance() + " id:" + oneBeacon.getId1() + "/" + oneBeacon.getId2() + "/" + oneBeacon.getId3());
                 }
