@@ -221,9 +221,11 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
+                        if (document.getBoolean("Occupied")) {
+                            spot.setBackgroundColor(Color.RED);
+                        }
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
                         Log.d(TAG, "Parking spot occupied: " + document.getBoolean("Occupied"));
-                        spot.setBackgroundColor(Color.RED);
                     } else {
                         Log.d(TAG, "No such document");
                     }
