@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "158830759306",
+    "firebase_url": "https://hackdfw2019-lathe.firebaseio.com",
+    "project_id": "hackdfw2019-lathe",
+    "storage_bucket": "hackdfw2019-lathe.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:158830759306:android:857791d9f517e17f",
+        "android_client_info": {
+          "package_name": "com.latheabusaid.hackdfw2019"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "158830759306-8oett6921je5813gkaiub0o3e71drp8g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAHVHoZlbChwN3cLThCGCJkG2JuwnNvfis"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
