@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -16,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-       // RangingActivity testActivity = new RangingActivity();
+        //RangingActivity testActivity = new RangingActivity();
         //testActivity.onBeaconServiceConnect();
         setContentView(R.layout.activity_main);
 
@@ -36,8 +37,12 @@ public class MainActivity extends AppCompatActivity {
         license = (TextInputLayout) findViewById(R.id.license);
         String licensePlateStr = license.getEditText().getText().toString();
 
-
-
+        Button mapButton;
+        mapButton = (Button) findViewById(R.id.mapButton);
+        mapButton.setOnClickListener(new View.OnClickListener() {
+                                         public void onClick(View v) {
+                                             setContentView(R.layout.activity_map);
+                                         }});
         //Toolbar toolbar = findViewById(R.id.toolbar);
        // setSupportActionBar(toolbar);
 
