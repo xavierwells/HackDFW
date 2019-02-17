@@ -103,7 +103,8 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
             }
         });
 
-        setParkingSpace(db,1,true);
+//        setParkingSpace(db,1,false);
+//        setParkingSpace(db,1,true);
     }
 
     @Override
@@ -153,9 +154,10 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
             @Override
             public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
                 Log.d(MainActivity.TAG, "didRangeBeaconsInRegion was called");
-                //{
                 Log.d(MainActivity.TAG, "ID: " + region.getId1() + "|");
-                //}
+
+                final FirebaseFirestore db = FirebaseFirestore.getInstance();
+                setParkingSpace(db,1,true);
             }
         });
         try {
