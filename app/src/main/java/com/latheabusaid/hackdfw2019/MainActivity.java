@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        setParkingSpace(db,1,true);
+//        setParkingSpace(db,1,false);
     }
 
     @Override
@@ -220,13 +220,17 @@ public class MainActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
+                        if (document.getBoolean("Occupied")) {
+                            spot.setBackgroundColor(Color.RED);
+                        }
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
                         Log.d(TAG, "Parking spot occupied: " + document.getBoolean("Occupied"));
-                        spot.setBackgroundColor(Color.RED);
                     } else {
+                        spot.setBackgroundColor(Color.GREEN);
                         Log.d(TAG, "No such document");
                     }
                 } else {
+                    spot.setBackgroundColor(Color.GRAY);
                     Log.d(TAG, "get failed with ", task.getException());
                 }
             }
