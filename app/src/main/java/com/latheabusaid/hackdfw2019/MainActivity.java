@@ -30,6 +30,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import org.altbeacon.beacon.Beacon;
+import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.BeaconParser;
 import org.altbeacon.beacon.Identifier;
@@ -41,7 +42,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements BeaconConsumer {
     public static final String TAG = "MainActivity";
     private BeaconManager beaconManager;
 
@@ -60,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
          */
         beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
 
-//        beaconManager.bind(this);
+        beaconManager.bind(this);
 
         FirebaseApp.initializeApp(this);
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -102,14 +103,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//        setParkingSpace(db,1,false);
+        setParkingSpace(db,1,true);
     }
 
     @Override
     protected void onDestroy() {
         Log.d(MainActivity.TAG, "onDestroy was called");
         super.onDestroy();
-//        beaconManager.unbind(this);
+        beaconManager.unbind(this);
     }
 
 //    @Override
@@ -220,17 +221,13 @@ public class MainActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
-                        if (document.getBoolean("Occupied")) {
-                            spot.setBackgroundColor(Color.RED);
-                        }
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
                         Log.d(TAG, "Parking spot occupied: " + document.getBoolean("Occupied"));
+                        spot.setBackgroundColor(Color.RED);
                     } else {
-                        spot.setBackgroundColor(Color.GREEN);
                         Log.d(TAG, "No such document");
                     }
                 } else {
-                    spot.setBackgroundColor(Color.GRAY);
                     Log.d(TAG, "get failed with ", task.getException());
                 }
             }
