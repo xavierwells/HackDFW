@@ -55,24 +55,26 @@ public class MainActivity extends AppCompatActivity {
         final TextInputLayout model;
         model = (TextInputLayout) findViewById(R.id.model);
 
-        TextInputLayout license;
+        final TextInputLayout license;
         license = (TextInputLayout) findViewById(R.id.license);
-        String licensePlateStr = license.getEditText().getText().toString();
 
         Button mapButton;
         mapButton = (Button) findViewById(R.id.mapButton);
         mapButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                final String licensePlateStr = license.getEditText().getText().toString();
                 final String makeStr = makein.getEditText().getText().toString();
                 final String nameStr = name.getEditText().getText().toString();
                 final String modelStr = model.getEditText().getText().toString();
-                Log.d(TAG, nameStr + " " + makeStr + " " + modelStr);
-                addVehicle(db,nameStr,makeStr,modelStr);
+                Log.d(TAG, nameStr + " " + licensePlateStr + " " + makeStr + " " + modelStr);
+                addVehicle(db,nameStr,licensePlateStr,makeStr,modelStr);
                 setContentView(R.layout.activity_map);
             }
         });
 
+        setParkingSpace(db,1,true);
 
+        isParkingSpaceFull(db,1);
     }
 
     @Override
@@ -97,15 +99,16 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void addVehicle(final FirebaseFirestore db, String licencePlateNum, String make, String model) {
+    public void addVehicle(final FirebaseFirestore db, String name, String licencePlateNum, String make, String model) {
         //store passed info to car object
         Map<String, Object> car = new HashMap<>();
+        car.put("Name", name);
         car.put("Licence Plate", licencePlateNum);
         car.put("Make", make);
         car.put("Model", model);
 
         //Add car to database
-        db.collection("Parking Spaces")
+        db.collection("Cars")
                 .add(car)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
@@ -121,13 +124,13 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    public void setParkingSpace (FirebaseFirestore db, boolean occupied) {
+    public void setParkingSpace (FirebaseFirestore db, int spotNum, boolean occupied) {
         //store passed info to parkingSpace object
         Map<String, Object> parkingSpace = new HashMap<>();
         parkingSpace.put("Occupied", occupied);
 
         //Write parkingSpace info to database
-        db.collection("Parking Spaces").document("Spot 2")
+        db.collection("Parking Spaces").document("Spot" + spotNum)
                 .set(parkingSpace)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -144,8 +147,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //TODO: make this function read the data from the document and return the occupied value
-    public void isParkingSpaceFull (FirebaseFirestore db, String parkingSpace) {
-        DocumentReference docRef = db.collection("Parking Spaces").document(parkingSpace);
+    public void isParkingSpaceFull (FirebaseFirestore db, int spotNum) {
+        DocumentReference docRef = db.collection("Parking Spaces").document("Spot" + spotNum);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -153,6 +156,7 @@ public class MainActivity extends AppCompatActivity {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                        Log.d(TAG, "Parking spot occupied: " + document.getBoolean("Occupied"));
                     } else {
                         Log.d(TAG, "No such document");
                     }
