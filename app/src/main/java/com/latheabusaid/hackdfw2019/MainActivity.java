@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -12,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -38,17 +40,20 @@ public class MainActivity extends AppCompatActivity {
         //testActivity.onBeaconServiceConnect();
         setContentView(R.layout.activity_main);
 
-        TextInputLayout makein;
+        FirebaseApp.initializeApp(this);
+        final FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        //addVehicle test
+//        addVehicle(db,"licence","make","model");
+
+        final TextInputLayout makein;
         makein = (TextInputLayout) findViewById(R.id.makein);
-        String makeStr = makein.getEditText().getText().toString();
 
-        TextInputLayout name;
+        final TextInputLayout name;
         name = (TextInputLayout) findViewById(R.id.name);
-        String nameStr = name.getEditText().getText().toString();
 
-        TextInputLayout model;
+        final TextInputLayout model;
         model = (TextInputLayout) findViewById(R.id.model);
-        String modelStr = model.getEditText().getText().toString();
 
         TextInputLayout license;
         license = (TextInputLayout) findViewById(R.id.license);
@@ -57,23 +62,16 @@ public class MainActivity extends AppCompatActivity {
         Button mapButton;
         mapButton = (Button) findViewById(R.id.mapButton);
         mapButton.setOnClickListener(new View.OnClickListener() {
-                                         public void onClick(View v) {
-                                             setContentView(R.layout.activity_map);
-                                         }});
-        //Toolbar toolbar = findViewById(R.id.toolbar);
-       // setSupportActionBar(toolbar);
+            public void onClick(View v) {
+                final String makeStr = makein.getEditText().getText().toString();
+                final String nameStr = name.getEditText().getText().toString();
+                final String modelStr = model.getEditText().getText().toString();
+                Log.d(TAG, nameStr + " " + makeStr + " " + modelStr);
+                addVehicle(db,nameStr,makeStr,modelStr);
+                setContentView(R.layout.activity_map);
+            }
+        });
 
-        //FloatingActionButton fab = findViewById(R.id.fab);
-       // fab.setOnClickListener(new View.OnClickListener() {
-           // @Override
-           // public void onClick(View view) {
-               // Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-               //         .setAction("Action", null).show();
-        //    }
-       // });
-
-        FirebaseApp.initializeApp(this);
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     }
 
@@ -99,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void addVehicle(FirebaseFirestore db, String licencePlateNum, String make, String model) {
+    public void addVehicle(final FirebaseFirestore db, String licencePlateNum, String make, String model) {
         //store passed info to car object
         Map<String, Object> car = new HashMap<>();
         car.put("Licence Plate", licencePlateNum);
