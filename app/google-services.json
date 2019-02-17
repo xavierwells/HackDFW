@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "158830759306-rvi9eolkajneu2nqg40f6f8u6pk6iu4a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.latheabusaid.hackdfw2019",
+            "certificate_hash": "b3dd374358da1a5432e98a17028742c5ee9f6292"
+          }
+        },
+        {
           "client_id": "158830759306-8oett6921je5813gkaiub0o3e71drp8g.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "158830759306-8oett6921je5813gkaiub0o3e71drp8g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2
